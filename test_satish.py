@@ -81,7 +81,7 @@ for obj in output_json:
         
 
 
-
+current_message = heading_text + current_message
 
             
 if current_message:
