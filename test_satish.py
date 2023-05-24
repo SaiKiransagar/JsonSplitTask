@@ -25,77 +25,72 @@ def remove_trailing_comma(string):
 
 output_json = [{"transaction_type": "APCustomerOrders", "customer_request_identifier": "89554", "customer_request_date": "2022-12-14T12:25:41.890+05:30", "business_partner_no": "13121", "export_timestamp": "2023-05-22 12:28:56", "request_details": [{"order_code": "61724932474", "department_corporate_brand_name": "H&M", "article_no": "0964595001", "product_name": "Siri top", "quantity": 1, "currency": "EUR", "order_item_price": 12, "vat_amount": 0, "freight_amount": 0, "order_status": "Dispatched", "order_date": "2023-01-28T11:48:00+00:00"}]}, {"transaction_type": "APRatingsAndReviews", "customer_request_identifier": "89554", "customer_request_date": "2022-12-14T12:25:41.890+05:30", "business_partner_no": "13121", "export_timestamp": "2023-05-22 12:28:58", "request_details": [{"order_code": "61724932474", "product_name": "Siri top", "size_name": "M", "date_of_purchase": "2023-01-28T11:48:00+00:00", "date_of_review": "2023-02-18T11:12:00+00:00", "rataing": "4", "review_status": "Published"}]}, {"transaction_type": "APSalesDeliveryAddress", "customer_request_identifier": "89554", "customer_request_date": "2022-12-14T12:25:41.890+05:30", "business_partner_no": "13121", "export_timestamp": "2023-05-22 12:29:00", "request_details": []}, {"transaction_type": "LargeDataTestCheck", "customer_request_identifier": "89554", "customer_request_date": "2022-12-14T12:25:41.890+05:30", "business_partner_no": "13121", "export_timestamp": "2023-05-22 12:29:02", "request_details": [{"order_code": "61724932474", "department_corporate_brand_name": "H&M", "article_no": "0964595001", "product_name": "Siri top", "quantity": 1, "currency": "EUR", "order_item_price": 12, "vat_amount": 0, "freight_amount": 0, "order_status": "Dispatched", "order_date": "2023-01-28T11:48:00+00:00"}, {"order_code": "61724932474", "department_corporate_brand_name": "H&M", "article_no": "0964595001", "product_name": "Siri top", "quantity": 1, "currency": "EUR", "order_item_price": 12, "vat_amount": 0, "freight_amount": 0, "order_status": "Dispatched", "order_date": "2023-01-28T11:48:00+00:00"}, {"order_code": "61724932474", "department_corporate_brand_name": "H&M", "article_no": "0964595001", "product_name": "Siri top", "quantity": 1, "currency": "EUR", "order_item_price": 12, "vat_amount": 0, "freight_amount": 0, "order_status": "Dispatched", "order_date": "2023-01-28T11:48:00+00:00"}, {"order_code": "61724932474", "department_corporate_brand_name": "H&M", "article_no": "0964595001", "product_name": "Siri top", "quantity": 1, "currency": "EUR", "order_item_price": 12, "vat_amount": 0, "freight_amount": 0, "order_status": "Dispatched", "order_date": "2023-01-28T11:48:00+00:00"}, {"order_code": "61724932474", "department_corporate_brand_name": "H&M", "article_no": "0964595001", "product_name": "Siri top", "quantity": 1, "currency": "EUR", "order_item_price": 12, "vat_amount": 0, "freight_amount": 0, "order_status": "Dispatched", "order_date": "2023-01-28T11:48:00+00:00"}, {"order_code": "61724932474", "department_corporate_brand_name": "H&M", "article_no": "0964595001", "product_name": "Siri top", "quantity": 1, "currency": "EUR", "order_item_price": 12, "vat_amount": 0, "freight_amount": 0, "order_status": "Dispatched", "order_date": "2023-01-28T11:48:00+00:00"}, {"order_code": "61724932474", "department_corporate_brand_name": "H&M", "article_no": "0964595001", "product_name": "Siri top", "quantity": 1, "currency": "EUR", "order_item_price": 12, "vat_amount": 0, "freight_amount": 0, "order_status": "Dispatched", "order_date": "2023-01-28T11:48:00+00:00"}, {"order_code": "61724932474", "department_corporate_brand_name": "H&M", "article_no": "0964595001", "product_name": "Siri top", "quantity": 1, "currency": "EUR", "order_item_price": 12, "vat_amount": 0, "freight_amount": 0, "order_status": "Dispatched", "order_date": "2023-01-28T11:48:00+00:00"}]}, {"transaction_type": "APClubEvents", "customer_request_identifier": "89554", "customer_request_date": "2022-12-14T12:25:41.890+05:30", "business_partner_no": "13121", "export_timestamp": "2023-05-22 12:29:05", "request_details": []}]
 
-#print(type(output_json))  #Type- List  
 
 # Prepare outbound message payload and body
 MAX_MESSAGE_SIZE = 1000
 messages = []
 current_message = ''
+heading_text = ''
 
-sum_of_current_objects = 0
 
 for obj in output_json:
-    #print(type(obj))  #Type- Dict
     obj_str = json.dumps(obj, default=serialize)
-    #print(type(obj_str))  #Type- String
     #print('Current_Object: ', obj_str)
     print('Length of Current_Object: ', len(obj_str))
 
-    sum_of_current_objects+=len(obj_str)
 
 
     if len(current_message) + len(obj_str) <= MAX_MESSAGE_SIZE:
-        current_message += obj_str
+        current_message = heading_text+current_message+obj_str
+        heading_text = ''
     else:
 
+        current_message = heading_text+current_message
         messages.append(current_message)
+        heading_text = ''
+
         
         if len(obj_str) <= MAX_MESSAGE_SIZE:
             
             current_message = obj_str
 
         else:
-            
+
             current_message = ''
-            current_message_dict = json.loads(obj_str)
-            current_message_dict_request_details = current_message_dict['request_details']
+            obj_str_dict = json.loads(obj_str)
+            obj_str_dict_request_details = obj_str_dict['request_details']
 
-            requestDetails_index = findindex(current_message_dict,'request_details')
+            requestDetails_index = findindex(obj_str_dict,'request_details')
 
-            first_key_pair_values = dict(list(current_message_dict.items())[0: requestDetails_index])
-            first_key_pair_values_str = json.dumps(first_key_pair_values)
+            first_key_pair_values = dict(list(obj_str_dict.items())[0: requestDetails_index])
+            heading_text = json.dumps(first_key_pair_values) + ', "request_details": ['
             
 
-            for eachvalue in current_message_dict_request_details:
+            for eachvalue in obj_str_dict_request_details:
                 eachvalue_str = json.dumps(eachvalue, default=serialize)
-                #print('Length of eachvalue_str: ',len(eachvalue_str)) 
 
                 if len(current_message) + len(eachvalue_str) <= MAX_MESSAGE_SIZE:
                     current_message+=eachvalue_str +','
 
                 else:
-                    print('sdio')
-                    current_message = first_key_pair_values_str+', "request_details": ['+current_message
+                    current_message = heading_text+current_message
                     current_message = remove_trailing_comma(current_message)
                     messages.append(current_message)
                     current_message = eachvalue_str +','
 
         
 
-#print(len(first_key_pair_values_str)+len(', "request_details": ['))
 
-##print('sum_of_current_objects', sum_of_current_objects)
 
-SUM_OF_OUTPUT_MESSAGES = 0
+
             
 if current_message:
     messages.append(current_message)
 
 for message in messages:
-    #print('LENGTH OF CURRENT MESSAGE: ', len(message))
-    #SUM_OF_OUTPUT_MESSAGES+=len(message)
-    print('MESSAGE SENDING TO SOLACE: ', message)
+    print('LENGTH OF CURRENT MESSAGE: ', len(message))
+    #print('MESSAGE SENDING TO SOLACE: ', message)
 
-#print('SUM_OF_OUTPUT_MESSAGES',SUM_OF_OUTPUT_MESSAGES)
+print('P.S Additional total length of around 400 characters is due to the heading string which is being added')
 
 print('EOP')    
