@@ -24,9 +24,8 @@ output_json = [{"transaction_type": "APCustomerOrders", "customer_request_identi
 MAX_MESSAGE_SIZE = 1000
 messages = []
 current_message = ''
-current_message2 = ''
-messages2 = []
-messages3 = []
+
+
 
 for obj in output_json:
     #print(type(obj))  #Type- Dict
@@ -35,50 +34,42 @@ for obj in output_json:
     #print('Current_Object: ', obj_str)
     print('Length of Current_Object: ', len(obj_str))
 
-    messages= messages+messages3
 
     if len(current_message) + len(obj_str) <= MAX_MESSAGE_SIZE:
         current_message += obj_str
     else:
 
-        
         messages.append(current_message)
+        
         if len(obj_str) <= MAX_MESSAGE_SIZE:
+            
             current_message = obj_str
 
         else:
             
+            current_message = ''
             current_message_dict = json.loads(obj_str)
             current_message_dict_request_details = current_message_dict['request_details']
-            current_message_dict_transaction_type = current_message_dict['transaction_type']
 
             requestDetails_index = findindex(current_message_dict,'request_details')
 
             first_key_pair_values = dict(list(current_message_dict.items())[0: requestDetails_index])
             first_key_pair_values_str = json.dumps(first_key_pair_values)
-
-            print(len(current_message_dict_request_details),'llllll')
+            
 
             for eachvalue in current_message_dict_request_details:
                 eachvalue_str = json.dumps(eachvalue, default=serialize)
                 #print('Length of eachvalue_str: ',len(eachvalue_str)) 
 
-                if len(current_message2) + len(eachvalue_str) <= MAX_MESSAGE_SIZE:
-                    current_message2 = current_message2+eachvalue_str +','
+                if len(current_message) + len(eachvalue_str) <= MAX_MESSAGE_SIZE:
+                    current_message= current_message+eachvalue_str +','
 
                 else:
-                    current_message2 = first_key_pair_values_str+', "request_details": ['+current_message2
-                    messages2.append(current_message2)
-                    current_message2 = eachvalue_str
-                    
+                    current_message = first_key_pair_values_str+', "request_details": ['+current_message
+                    messages.append(current_message)
+                    current_message = eachvalue_str
 
-            if current_message2:
-                current_message2 = first_key_pair_values_str+', "request_details": ['+current_message2
-                messages2.append(current_message2)
-
-            current_message = obj_str
-
-            print(messages2,567)
+        
 
 
             
@@ -87,6 +78,6 @@ if current_message:
 
 for message in messages:
     print('LENGTH OF CURRENT MESSAGE: ', len(message))
-   # print('MESSAGE SENDING TO SOLACE: ', message)
+    #print('MESSAGE SENDING TO SOLACE: ', message)
 
 print('EOP')    
