@@ -41,11 +41,11 @@ view_e = {"transaction_type": "APClubEvents", "customer_request_identifier": "89
 output_json = [{"transaction_type": "APCustomerOrders", "customer_request_identifier": "89554", "customer_request_date": "2022-12-14T12:25:41.890+05:30", "business_partner_no": "13121", "export_timestamp": "2023-05-22 12:28:56", "request_details": [{"order_code": "61724932474", "department_corporate_brand_name": "H&M", "article_no": "0964595001", "product_name": "Siri top", "quantity": 1, "currency": "EUR", "order_item_price": 12, "vat_amount": 0, "freight_amount": 0, "order_status": "Dispatched", "order_date": "2023-01-28T11:48:00+00:00"}]}, {"transaction_type": "APRatingsAndReviews", "customer_request_identifier": "89554", "customer_request_date": "2022-12-14T12:25:41.890+05:30", "business_partner_no": "13121", "export_timestamp": "2023-05-22 12:28:58", "request_details": [{"order_code": "61724932474", "product_name": "Siri top", "size_name": "M", "date_of_purchase": "2023-01-28T11:48:00+00:00", "date_of_review": "2023-02-18T11:12:00+00:00", "rataing": "4", "review_status": "Published"}]}, {"transaction_type": "APSalesDeliveryAddress", "customer_request_identifier": "89554", "customer_request_date": "2022-12-14T12:25:41.890+05:30", "business_partner_no": "13121", "export_timestamp": "2023-05-22 12:29:00", "request_details": []}, {"transaction_type": "LargeDataTestCheck", "customer_request_identifier": "89554", "customer_request_date": "2022-12-14T12:25:41.890+05:30", "business_partner_no": "13121", "export_timestamp": "2023-05-22 12:29:02", "request_details": [{"order_code": "61724932474", "department_corporate_brand_name": "H&M", "article_no": "0964595001", "product_name": "Siri top", "quantity": 1, "currency": "EUR", "order_item_price": 12, "vat_amount": 0, "freight_amount": 0, "order_status": "Dispatched", "order_date": "2023-01-28T11:48:00+00:00"}, {"order_code": "61724932474", "department_corporate_brand_name": "H&M", "article_no": "0964595001", "product_name": "Siri top", "quantity": 1, "currency": "EUR", "order_item_price": 12, "vat_amount": 0, "freight_amount": 0, "order_status": "Dispatched", "order_date": "2023-01-28T11:48:00+00:00"}, {"order_code": "61724932474", "department_corporate_brand_name": "H&M", "article_no": "0964595001", "product_name": "Siri top", "quantity": 1, "currency": "EUR", "order_item_price": 12, "vat_amount": 0, "freight_amount": 0, "order_status": "Dispatched", "order_date": "2023-01-28T11:48:00+00:00"}, {"order_code": "61724932474", "department_corporate_brand_name": "H&M", "article_no": "0964595001", "product_name": "Siri top", "quantity": 1, "currency": "EUR", "order_item_price": 12, "vat_amount": 0, "freight_amount": 0, "order_status": "Dispatched", "order_date": "2023-01-28T11:48:00+00:00"}, {"order_code": "61724932474", "department_corporate_brand_name": "H&M", "article_no": "0964595001", "product_name": "Siri top", "quantity": 1, "currency": "EUR", "order_item_price": 12, "vat_amount": 0, "freight_amount": 0, "order_status": "Dispatched", "order_date": "2023-01-28T11:48:00+00:00"}, {"order_code": "61724932474", "department_corporate_brand_name": "H&M", "article_no": "0964595001", "product_name": "Siri top", "quantity": 1, "currency": "EUR", "order_item_price": 12, "vat_amount": 0, "freight_amount": 0, "order_status": "Dispatched", "order_date": "2023-01-28T11:48:00+00:00"}, {"order_code": "61724932474", "department_corporate_brand_name": "H&M", "article_no": "0964595001", "product_name": "Siri top", "quantity": 1, "currency": "EUR", "order_item_price": 12, "vat_amount": 0, "freight_amount": 0, "order_status": "Dispatched", "order_date": "2023-01-28T11:48:00+00:00"}, {"order_code": "61724932474", "department_corporate_brand_name": "H&M", "article_no": "0964595001", "product_name": "Siri top", "quantity": 1, "currency": "EUR", "order_item_price": 12, "vat_amount": 0, "freight_amount": 0, "order_status": "Dispatched", "order_date": "2023-01-28T11:48:00+00:00"}]}, {"transaction_type": "APClubEvents", "customer_request_identifier": "89554", "customer_request_date": "2022-12-14T12:25:41.890+05:30", "business_partner_no": "13121", "export_timestamp": "2023-05-22 12:29:05", "request_details": []}]
 
 # Prepare outbound message payload and body
-MAX_MESSAGE_SIZE = 1500
+MAX_MESSAGE_SIZE = 1000
 messages = []
 current_message = ''
-heading_text = ''
-trailing_text = ''
+#heading_text = ''
+#trailing_text = ''
 
 for obj in output_json:
     obj_str = json.dumps(obj, default=serialize)
@@ -71,11 +71,11 @@ for obj in output_json:
         heading_text = ''
         trailing_text = ''
         
+        
         if len(obj_str) <= MAX_MESSAGE_SIZE:
-            current_message = obj_str
+            current_message = obj_str+','
 
         else:
-
             current_message = ''
             obj_str_dict_request_details = obj['request_details']
 
@@ -84,7 +84,7 @@ for obj in output_json:
             first_key_pair_values = json.dumps(first_key_pair_values)
             first_key_pair_values = remove_trailing_character(first_key_pair_values,'}')
             
-            heading_text = first_key_pair_values + ', "reqquest_details": ['
+            heading_text = first_key_pair_values + ', "request_details": ['
             trailing_text = ']}'
             
             for eachvalue in obj_str_dict_request_details:
